@@ -31,24 +31,19 @@ Examine the waveform output to verify that the traffic light transitions through
 Save and Document Results:
 
 Capture screenshots of the waveform and save the simulation logs to include in your report.
-## CODE:
-Verilog Code for Traffic Light Controller
-~~~
+
+## Verilog Code for Traffic Light Controller:
+``` verilog
 module traffic_light_controller (
     input wire clk,
     input wire reset,
-    output reg [2:0] lights  // 3-bit output: [2]=Red, [1]=Yellow, [0]=Green
-);
-
-    // Define states using parameters
-    parameter GREEN = 2'b00;
-    parameter YELLOW = 2'b01;
-    parameter RED = 2'b10;
-
-    reg [1:0] current_state, next_state;  // State registers
-    reg [3:0] counter;  // Timer counter
-
-    // State transition based on counter
+    output reg [2:0] lights  );
+   parameter reg [1:0]
+        GREEN = 2'b00,
+        YELLOW = 2'b01,
+        RED = 2'b10;
+        reg [1:0] current_state, next_state;
+    reg [3:0] counter;
     always @(posedge clk or posedge reset) begin
         if (reset) begin
             current_state <= GREEN;
@@ -62,8 +57,6 @@ module traffic_light_controller (
             end
         end
     end
-
-    // Next state logic and output control
     always @(*) begin
         case (current_state)
             GREEN: begin
@@ -75,7 +68,7 @@ module traffic_light_controller (
                 next_state = RED;
             end
             RED: begin
-                lights = 3'b011;  // Red light on
+                lights = 3'b100;  // Red light on
                 next_state = GREEN;
             end
             default: begin
@@ -85,55 +78,36 @@ module traffic_light_controller (
         endcase
     end
 endmodule
-~~~
+```
 ## OUTPUT :
-![Screenshot 2025-05-17 140451](https://github.com/user-attachments/assets/13c8ba14-a398-44ae-b274-5270114cf96d)
+![image](https://github.com/user-attachments/assets/15cc8d76-ea48-4c7d-9c0f-616316ae0faa)
 
 
 ## Testbench for Traffic Light Controller
-~~~
+```verilog
+`timescale 1ns / 1ps
 module traffic_light_controller_tb;
-
-// Inputs
-reg clk;
-reg reset;
-
-// Outputs
-wire [2:0] lights;
-
-// Instantiate the Unit Under Test (UUT)
-traffic_light_controller uut (
-    .clk(clk),
-    .reset(reset),
-    .lights(lights)
-);
-
-// Clock generation (Toggle every 5 ns to generate a 10 ns period)
-always #5 clk = ~clk;
-
-// Test procedure
-initial begin
-    // Initialize inputs
-    clk = 0;
-    reset = 1;
-
-    // Apply reset for 10 ns
-    #10 reset = 0;
-
-    // Run simulation for 200 ns to observe light transitions
-    #200 $stop;
-end
-
-//// Monitor the lights signal at each time step
-//initial begin
-//    $monitor("Time=%0t | Lights (R Y G) = %b", $time, lights);
-//end
-
+    reg clk;
+    reg reset;
+    wire [2:0] lights;
+    traffic_light_controller uut (
+        .clk(clk),
+        .reset(reset),
+        .lights(lights) );
+    always #5 clk = ~clk;
+    initial begin
+        clk = 0;
+        reset = 1;
+        #10 reset = 0;
+        #100 $stop;
+    end
+    initial begin
+        $monitor("Time=%0t | Lights (R Y G) = %b", $time, lights);
+    end
 endmodule
-
-~~~
+```
 ## OUTPUT :
-![image](https://github.com/user-attachments/assets/548c82d8-4385-49f1-912d-c2fd342064e9)
+![image](https://github.com/user-attachments/assets/57e2b069-78a6-419e-adc0-26c70be25a52)
 
 
 ## Conclusion
